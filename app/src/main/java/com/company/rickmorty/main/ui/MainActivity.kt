@@ -1,10 +1,10 @@
 package com.company.rickmorty.main.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.company.rickmorty.R
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.company.rickmorty.databinding.ActivityMainBinding
+import com.company.rickmorty.main.adapter.RickMortyAdapter
 import com.company.rickmorty.main.api.RetrofitClient
 import com.company.rickmorty.main.api.RickAndMortyApi
 import com.company.rickmorty.main.models.character.CharacterData
@@ -14,7 +14,8 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MainContract {
 
-    private val api: RickAndMortyApi = RetrofitClient.getRetrofit().create(RickAndMortyApi::class.java)
+    private val api: RickAndMortyApi =
+        RetrofitClient.getRetrofit().create(RickAndMortyApi::class.java)
 
     private val mainPresenter = MainPresenter(api)
 
@@ -24,11 +25,19 @@ class MainActivity : AppCompatActivity(), MainContract {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        mainPresenter.attach(this)
-        mainPresenter.getCharacterDataFromApi()
-        mainPresenter.getLocationDataFromApi()
-        mainPresenter.getEpisodeDataFromApi()
+        with(binding) {
+
+            mainPresenter.attach()
+            mainPresenter.getCharacterDataFromApi()
+            mainRecyclerView.layoutManager = LinearLayoutManager(baseContext)
+            val adapter = RickMortyAdapter()
+            mainRecyclerView.adapter = adapter
+
+            setContentView(root)
+        }
+
+//        mainPresenter.getLocationDataFromApi()
+//        mainPresenter.getEpisodeDataFromApi()
     }
 
     override fun showCharacterData(data: CharacterData) {
